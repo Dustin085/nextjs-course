@@ -1,11 +1,14 @@
 "use client";
 
+import { addPost } from "@/services/post";
 import {
   Dialog,
   DialogBackdrop,
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 interface CommentEditorProps {
@@ -17,6 +20,12 @@ const CommentEditor = ({ isOpen, setIsOpen }: CommentEditorProps) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
+  const queryClient = useQueryClient()
+
+  const searchParams = useSearchParams()
+  const currentPage = searchParams.get("page") || "1"
+  const route = useRouter()
+
   const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
@@ -24,10 +33,30 @@ const CommentEditor = ({ isOpen, setIsOpen }: CommentEditorProps) => {
     setContent(e.target.value);
   };
 
+  const { mutate: addPostMutate, isPending } = useMutation({
+    mutationFn: addPost,
+    onSuccess: () => {
+      setIsOpen(false)
+      queryClient.invalidateQueries({ queryKey: ["posts", currentPage] })
+      if (currentPage !== "1") {
+        route.push("/?page=1")
+      }
+    }
+  })
+
+  const onPost = () => {
+    if (isPending) return
+    if (!title || !content) {
+      alert("Please fill in all fields.")
+      return
+    }
+    addPostMutate({ title, content })
+  }
+
   return (
     <Dialog
       open={isOpen}
-      onClose={() => {}}
+      onClose={() => { }}
       transition
       className="fixed inset-0 flex w-screen items-center justify-center bg-black/30 p-4 transition duration-300 ease-out data-closed:opacity-0"
     >
@@ -58,9 +87,10 @@ const CommentEditor = ({ isOpen, setIsOpen }: CommentEditorProps) => {
           </button>
           <button
             className="text-white font-bold cursor-pointer"
-            onClick={() => setIsOpen(false)}
+            onClick={onPost}
+            disabled={isPending}
           >
-            Post
+            {!isPending ? "Post" : "Posting..."}
           </button>
         </div>
       </DialogPanel>

@@ -21,7 +21,7 @@ export const POST = withApiHandler(async (request: NextRequest) => {
   const result = await collection.insertOne({
     title,
     content,
-    createAt: new Date().getTime(),
+    createdAt: new Date().getTime(),
     id: uuidv4(),
   });
   return Response.json(success({ id: result.insertedId }), { status: 200 });
