@@ -16,5 +16,5 @@ export const GET = withApiHandler(async (request: NextRequest) => {
   const db = client.db(DB_NAME);
   const collection = db.collection("posts");
   const post = await collection.findOne({ id });
-  return Response.json(success({ post }), { status: 200 });
+  return Response.json(success(post), { status: 200 });
 });

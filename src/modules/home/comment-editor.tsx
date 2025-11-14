@@ -20,11 +20,11 @@ const CommentEditor = ({ isOpen, setIsOpen }: CommentEditorProps) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-  const searchParams = useSearchParams()
-  const currentPage = searchParams.get("page") || "1"
-  const route = useRouter()
+  const searchParams = useSearchParams();
+  const currentPage = searchParams.get("page") || "1";
+  const route = useRouter();
 
   const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -36,27 +36,27 @@ const CommentEditor = ({ isOpen, setIsOpen }: CommentEditorProps) => {
   const { mutate: addPostMutate, isPending } = useMutation({
     mutationFn: addPost,
     onSuccess: () => {
-      setIsOpen(false)
-      queryClient.invalidateQueries({ queryKey: ["posts", currentPage] })
+      setIsOpen(false);
+      queryClient.invalidateQueries({ queryKey: ["posts", currentPage] });
       if (currentPage !== "1") {
-        route.push("/?page=1")
+        route.push("/?page=1");
       }
-    }
-  })
+    },
+  });
 
   const onPost = () => {
-    if (isPending) return
+    if (isPending) return;
     if (!title || !content) {
-      alert("Please fill in all fields.")
-      return
+      alert("Please fill in all fields.");
+      return;
     }
-    addPostMutate({ title, content })
-  }
+    addPostMutate({ title, content });
+  };
 
   return (
     <Dialog
       open={isOpen}
-      onClose={() => { }}
+      onClose={() => {}}
       transition
       className="fixed inset-0 flex w-screen items-center justify-center bg-black/30 p-4 transition duration-300 ease-out data-closed:opacity-0"
     >
