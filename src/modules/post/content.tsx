@@ -23,7 +23,9 @@ const Content = () => {
       >
         {"← Back"}
       </button>
-      <Post post={data} />
+      {isLoading && <div className="py-6">Loading Post...</div>}
+      {error && <div className="py-6">{error.message}</div>}
+      {!isLoading && data && <Post post={data} />}
     </div>
   );
 };
